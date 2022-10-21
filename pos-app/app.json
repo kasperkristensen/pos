@@ -16,17 +16,17 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.medusajs.medusapos"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.medusajs.medusapos"
     },
     "web": {
       "favicon": "./assets/images/favicon.png"
@@ -41,6 +41,11 @@
           "bluetoothAlwaysUsagePermission": "This app uses Bluetooth to connect to supported card readers."
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "27ec7821-4822-47f7-85de-1368ecf97206"
+      }
+    }
   }
 }
