@@ -42,7 +42,6 @@ const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET || "";
 const plugins = [
   `medusa-fulfillment-manual`,
   `medusa-payment-manual`,
-  `medusa-plugin-pos`,
   // Uncomment to add Stripe support.
   // You can create a Stripe account via: https://stripe.com
   // {

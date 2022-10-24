@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const BACKEND_URL =
-  process.env.BACEND_URL || 'http://03a2-83-151-141-70.ngrok.io'
+  process.env.BACKEND_URL || 'http://ddab-83-151-141-70.ngrok.io'
 
 const apiClient = axios.create({
   baseURL: `${BACKEND_URL}/pos`,

@@ -34,6 +34,7 @@ export type RootTabParamList = {
   Search: undefined
   BarcodeScanner: undefined
   Cart: undefined
+  DiscoverReader: undefined
 }
 
 export type RootTabScreenProps<Screen extends keyof RootTabParamList> =

@@ -1,11 +1,17 @@
-import { useStripeTerminal } from '@stripe/stripe-terminal-react-native'
+import { Reader, useStripeTerminal } from '@stripe/stripe-terminal-react-native'
 import { useEffect } from 'react'
-import { Alert, Text, View } from 'react-native'
+import { Alert, Pressable, Text, View } from 'react-native'
 import { RootTabScreenProps } from '../types'
 
-const DiscoverReadersScreen = ({ navigation }: RootTabScreenProps<'User'>) => {
-  const { discoverReaders, discoveredReaders, connectBluetoothReader } =
-    useStripeTerminal()
+const DiscoverReadersScreen = ({
+  navigation,
+}: RootTabScreenProps<'DiscoverReader'>) => {
+  const {
+    discoverReaders,
+    discoveredReaders,
+    connectBluetoothReader,
+    cancelDiscovering,
+  } = useStripeTerminal()
 
   useEffect(() => {
     handleDiscoverReaders()
@@ -23,11 +29,37 @@ const DiscoverReadersScreen = ({ navigation }: RootTabScreenProps<'User'>) => {
     }
   }
 
+  const handleConnectBluetoothReader = async (selectedReader: Reader.Type) => {
+    const { reader, error } = await connectBluetoothReader({
+      reader: selectedReader,
+      locationId: 'loc_test',
+    })
+
+    if (error) {
+      console.log('connectBluetoothReader error', error)
+      return
+    }
+
+    console.log('Reader connected successfully', reader)
+  }
+
+  useEffect(() => {
+    console.log(JSON.stringify(discoveredReaders, null, 2))
+  }, [discoveredReaders])
+
   return (
     <View>
       {discoveredReaders.map((reader) => (
-        <View key={reader.id}>
-          <Text>{reader.id}</Text>
+        <View
+          key={reader.serialNumber}
+          style={{
+            paddingVertical: 16,
+            paddingHorizontal: 12,
+          }}
+        >
+          <Pressable onPress={() => handleConnectBluetoothReader(reader)}>
+            <Text>{reader.deviceType}</Text>
+          </Pressable>
         </View>
       ))}
     </View>

@@ -1,16 +1,21 @@
-import { TransactionBaseService } from "@medusajs/medusa";
 import { ProductVariantRepository } from "@medusajs/medusa/dist/repositories/product-variant";
 import { MedusaError } from "medusa-core-utils";
+import { BaseService } from "medusa-interfaces";
 import { EntityManager } from "typeorm";
 import { BarcodeType } from "../types/pos";
 
-class POSProductVariantService extends TransactionBaseService {
+type InjectedDependencies = {
+  manager: EntityManager;
+  productVariantRepository: typeof ProductVariantRepository;
+};
+
+class PosProductVariantService extends BaseService {
   protected manager_: EntityManager;
   protected transactionManager_: EntityManager | undefined;
 
   protected readonly productVariantRepository_: typeof ProductVariantRepository;
 
-  constructor({ manager, productVariantRepository }) {
+  constructor({ manager, productVariantRepository }: InjectedDependencies) {
     super(arguments[0]);
 
     this.manager_ = manager;
@@ -34,7 +39,9 @@ class POSProductVariantService extends TransactionBaseService {
         `No variant with barcode ${barcode} was found`
       );
     }
+
+    return variant;
   }
 }
 
-export default POSProductVariantService;
+export default PosProductVariantService;

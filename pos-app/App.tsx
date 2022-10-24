@@ -10,9 +10,17 @@ import useColorScheme from './src/lib/hooks/use-color-scheme'
 import onAppStateChange from './src/lib/utils/on-app-state-change'
 import Navigation from './src/navigation'
 
+import { useStripeTerminal } from '@stripe/stripe-terminal-react-native'
 import 'expo-dev-client'
+import { useEffect } from 'react'
 
 export default function App() {
+  const { initialize } = useStripeTerminal()
+
+  useEffect(() => {
+    initialize()
+  }, [initialize])
+
   const isLoadingComplete = useCachedResources()
   const colorScheme = useColorScheme()
   useAppState(onAppStateChange)

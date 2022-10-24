@@ -14,10 +14,10 @@ import {
 import TabButton from '../modules/navigation/tab-button'
 import SearchScreen from '../screens/app/search-screen'
 import BarcodeScreen from '../screens/barcode-screen'
+import DiscoverReadersScreen from '../screens/discover-readers-screen'
 import ModalScreen from '../screens/ModalScreen'
 import NotFoundScreen from '../screens/NotFoundScreen'
 import TabOneScreen from '../screens/TabOneScreen'
-import TabTwoScreen from '../screens/TabTwoScreen'
 import {
   RootStackParamList,
   RootTabParamList,
@@ -142,8 +142,8 @@ function BottomTabNavigator() {
         }}
       />
       <BottomTab.Screen
-        name="Cart"
-        component={TabTwoScreen}
+        name="DiscoverReader"
+        component={DiscoverReadersScreen}
         options={{
           title: 'Cart',
           tabBarButton: (props) => <TabButton {...props} />,
