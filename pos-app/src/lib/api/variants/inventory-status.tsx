@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { useQuery } from 'react-query'
 import apiClient from '../../../constants/api-client'
 
 export const request = async (barcode: string) => {
@@ -6,10 +6,6 @@ export const request = async (barcode: string) => {
     .get(`/variants/${barcode}/inventory`)
     .then(({ data: { status } }) => {
       return status
-    })
-    .catch((error) => {
-      alert(JSON.stringify(error, null, 2))
-      return undefined
     })
 }
 

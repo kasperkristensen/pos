@@ -9,11 +9,11 @@ import { SearchInput } from '../../modules/common/search-input'
 import { DismissKeyboardView } from '../../modules/helpers'
 import SearchResults from '../../modules/search-results'
 
-import { RootTabScreenProps } from '../../types'
+import { BottomScreenProps } from '../../types'
 
 export default function SearchScreen({
   navigation,
-}: RootTabScreenProps<'Search'>) {
+}: BottomScreenProps<'Search'>) {
   const { theme } = useTheme()
   const isFocussed = useIsFocused()
   const [useScanner, setUseScanner] = useState(false)

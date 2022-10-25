@@ -1,9 +1,10 @@
 import { useIsFocused } from '@react-navigation/native'
 import React from 'react'
 import { StyleSheet, View } from 'react-native'
-import { request } from '../lib/api/variants/inventory-status'
+import { retrieveVariant } from '../lib/api/variants/retrieve'
+import { useNotification } from '../lib/contexts/notification-context'
 import BarcodeScanner from '../modules/barcode-scanner'
-import { RootTabScreenProps } from '../types'
+import { BottomScreenProps } from '../types'
 
 type BoundingBox = {
   minX: number
@@ -14,22 +15,35 @@ type BoundingBox = {
 
 export default function BarcodeScreen({
   navigation,
-}: RootTabScreenProps<'BarcodeScanner'>) {
+}: BottomScreenProps<'BarcodeScanner'>) {
+  const { navigate } = navigation
+
   const isFocused = useIsFocused()
+  const { hideNotification, showNotification } = useNotification()
 
   const [isLoading, setIsLoading] = React.useState(false)
 
   const handleBarcodeScanned = async (barcode: string) => {
     setIsLoading(true)
 
-    request(barcode)
-      .then((variant) => {
+    retrieveVariant(barcode)
+      .then(({ variant }) => {
         setIsLoading(false)
-        alert(JSON.stringify(variant, null, 2))
+        hideNotification()
+        navigate('Root', {
+          screen: 'Product',
+          params: {
+            variant,
+            barcode,
+          },
+        })
       })
       .catch((error) => {
         setIsLoading(false)
-        alert(JSON.stringify(error, null, 2))
+        showNotification({
+          content: error.message,
+          duration: 3000,
+        })
       })
   }
 

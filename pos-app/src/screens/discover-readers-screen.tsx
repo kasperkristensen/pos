@@ -3,13 +3,13 @@ import { Reader, useStripeTerminal } from '@stripe/stripe-terminal-react-native'
 import { useEffect } from 'react'
 import { Alert, Pressable, Text, View } from 'react-native'
 import { DiscoveredReader } from '../modules/readers'
-import { RootTabScreenProps } from '../types'
+import { BottomScreenProps } from '../types'
 
 const LOCATION_ID = process.env.LOCATION_ID
 
 const DiscoverReadersScreen = ({
   navigation,
-}: RootTabScreenProps<'DiscoverReader'>) => {
+}: BottomScreenProps<'DiscoverReader'>) => {
   const isFocused = useIsFocused()
 
   const {

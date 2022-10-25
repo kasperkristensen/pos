@@ -1,5 +1,5 @@
-import { focusManager } from '@tanstack/react-query'
 import { AppStateStatus, Platform } from 'react-native'
+import { focusManager } from 'react-query'
 
 const onAppStateChange = (status: AppStateStatus) => {
   // React Query already supports in web browser refetch on window focus by default

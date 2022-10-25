@@ -1,4 +1,3 @@
-import { QueryClientProvider } from '@tanstack/react-query'
 import { StatusBar } from 'expo-status-bar'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import queryClient from './src/constants/query-client'
@@ -12,7 +11,9 @@ import Navigation from './src/navigation'
 
 import { useStripeTerminal } from '@stripe/stripe-terminal-react-native'
 import 'expo-dev-client'
+import { MedusaProvider } from 'medusa-react'
 import { useEffect } from 'react'
+import { BACKEND_URL } from './src/constants/api-client'
 import NotificationProvider from './src/lib/contexts/notification-context'
 import { Notification } from './src/modules/common/notification'
 
@@ -32,7 +33,12 @@ export default function App() {
   } else {
     return (
       <SafeAreaProvider>
-        <QueryClientProvider client={queryClient}>
+        <MedusaProvider
+          baseUrl={BACKEND_URL}
+          queryClientProviderProps={{
+            client: queryClient,
+          }}
+        >
           <ThemeProvider>
             <NotificationProvider>
               <Notification />
@@ -40,7 +46,7 @@ export default function App() {
               <StatusBar style="dark" />
             </NotificationProvider>
           </ThemeProvider>
-        </QueryClientProvider>
+        </MedusaProvider>
       </SafeAreaProvider>
     )
   }

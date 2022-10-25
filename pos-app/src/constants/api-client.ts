@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const BACKEND_URL =
+export const BACKEND_URL =
   process.env.BACKEND_URL || 'http://ddab-83-151-141-70.ngrok.io'
 
 const apiClient = axios.create({

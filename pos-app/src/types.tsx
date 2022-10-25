@@ -3,6 +3,7 @@
  * https://reactnavigation.org/docs/typescript/
  */
 
+import { ProductVariant } from '@medusajs/medusa'
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs'
 import {
   CompositeScreenProps,
@@ -20,28 +21,42 @@ declare global {
 }
 
 export type RootStackParamList = {
-  Root: NavigatorScreenParams<RootTabParamList> | undefined
+  Root: NavigatorScreenParams<MainStackParamList> | undefined
   Modal: undefined
   NotFound: undefined
   Scanner: undefined
 }
 
+export type MainStackParamList = {
+  Bottom: NavigatorScreenParams<BottomTabParamList> | undefined
+  Product: { barcode: string; variant: ProductVariant }
+}
+
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> =
   NativeStackScreenProps<RootStackParamList, Screen>
 
-export type RootTabParamList = {
+export type BottomTabParamList = {
+  Home: undefined
   User: undefined
   Search: undefined
   BarcodeScanner: undefined
   Cart: undefined
   DiscoverReader: undefined
+  Product: undefined
 }
 
-export type RootTabScreenProps<Screen extends keyof RootTabParamList> =
+export type BottomScreenProps<Screen extends keyof BottomTabParamList> =
   CompositeScreenProps<
-    BottomTabScreenProps<RootTabParamList, Screen>,
+    BottomTabScreenProps<BottomTabParamList, Screen>,
     NativeStackScreenProps<RootStackParamList>
   >
+
+export type ActionScreenProps<
+  Screen extends keyof Omit<MainStackParamList, 'Bottom'>
+> = CompositeScreenProps<
+  NativeStackScreenProps<MainStackParamList, Screen>,
+  NativeStackScreenProps<RootStackParamList>
+>
 
 export type AuthenticationStackParamList = {
   InitialAuth: undefined

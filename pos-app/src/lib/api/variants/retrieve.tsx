@@ -1,22 +1,37 @@
-import { useQuery } from '@tanstack/react-query'
+import { ProductVariant } from '@medusajs/medusa'
+import { useQuery } from 'react-query'
 import apiClient from '../../../constants/api-client'
+import { Response, ResponsePromise, UseQueryOptionsWrapper } from '../types'
 
-export const request = async (barcode: string) => {
-  return await apiClient
-    .get(`/variants/${barcode}`)
-    .then(({ data: { variant } }) => {
-      return variant
-    })
-    .catch((error) => {
-      alert(JSON.stringify(error, null, 2))
-      return undefined
-    })
+type ProductVariantResponse = {
+  variant: ProductVariant
 }
 
-const useVariant = (barcode?: string) => {
-  return useQuery(['variant', barcode], () => request(barcode!), {
-    enabled: !!barcode,
-  })
+export const retrieveVariant = async (
+  barcode: string
+): ResponsePromise<ProductVariantResponse> => {
+  const { data, ...rest } = await apiClient
+    .get(`/variants/${barcode}`)
+    .then((res) => res.data)
+
+  return { ...data, ...rest }
+}
+
+const useVariant = (
+  barcode?: string,
+  options?: UseQueryOptionsWrapper<
+    Response<ProductVariantResponse>,
+    Error,
+    ['variant', string | undefined]
+  >
+) => {
+  const { data, ...rest } = useQuery(
+    ['variant', barcode],
+    () => retrieveVariant(barcode!),
+    options
+  )
+
+  return { ...data, ...rest }
 }
 
 export default useVariant

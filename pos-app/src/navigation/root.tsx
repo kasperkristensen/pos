@@ -12,16 +12,18 @@ import {
   SearchIcon,
 } from '../modules/icons'
 import TabButton from '../modules/navigation/tab-button'
+import ProductScreen from '../screens/app/product-screen'
 import SearchScreen from '../screens/app/search-screen'
 import BarcodeScreen from '../screens/barcode-screen'
 import DiscoverReadersScreen from '../screens/discover-readers-screen'
+import Home from '../screens/home'
 import ModalScreen from '../screens/ModalScreen'
 import NotFoundScreen from '../screens/NotFoundScreen'
-import TabOneScreen from '../screens/TabOneScreen'
 import {
+  BottomScreenProps,
+  BottomTabParamList,
+  MainStackParamList,
   RootStackParamList,
-  RootTabParamList,
-  RootTabScreenProps,
 } from '../types'
 
 const Stack = createNativeStackNavigator<RootStackParamList>()
@@ -31,7 +33,7 @@ const RootNavigator = () => {
     <Stack.Navigator>
       <Stack.Screen
         name="Root"
-        component={BottomTabNavigator}
+        component={MainNavigator}
         options={{ headerShown: false }}
       />
       <Stack.Screen
@@ -46,11 +48,34 @@ const RootNavigator = () => {
   )
 }
 
+const Main = createNativeStackNavigator<MainStackParamList>()
+
+const MainNavigator = () => {
+  return (
+    <Main.Navigator>
+      <Main.Screen
+        name="Bottom"
+        component={BottomTabNavigator}
+        options={{ headerShown: false }}
+      />
+      <Main.Group>
+        <Main.Screen
+          name="Product"
+          component={ProductScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+      </Main.Group>
+    </Main.Navigator>
+  )
+}
+
 /**
  * A bottom tab navigator displays tab buttons on the bottom of the display to switch screens.
  * https://reactnavigation.org/docs/bottom-tab-navigator
  */
-const BottomTab = createBottomTabNavigator<RootTabParamList>()
+const BottomTab = createBottomTabNavigator<BottomTabParamList>()
 
 function BottomTabNavigator() {
   const { theme } = useTheme()
@@ -69,9 +94,9 @@ function BottomTabNavigator() {
       }}
     >
       <BottomTab.Screen
-        name="User"
-        component={TabOneScreen}
-        options={({ navigation }: RootTabScreenProps<'User'>) => ({
+        name="Home"
+        component={Home}
+        options={({ navigation }: BottomScreenProps<'Home'>) => ({
           title: 'Home',
           tabBarButton: (props) => <TabButton {...props} />,
           tabBarIcon: ({ focused }) => (
