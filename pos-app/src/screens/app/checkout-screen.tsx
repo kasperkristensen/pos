@@ -4,6 +4,7 @@ import {
   PaymentSession,
   Cart,
 } from '@medusajs/medusa'
+import { useStripeTerminal } from '@stripe/stripe-terminal-react-native'
 import {
   useAddShippingMethodToCart,
   useCompleteCart,
@@ -13,10 +14,15 @@ import {
 import { useEffect, useState } from 'react'
 import { Image, Text, TouchableHighlight, View } from 'react-native'
 import { retrieveOptions } from '../../lib/api/cart/get-shipping-options'
+import { updateIntent } from '../../lib/api/cart/update-payment-intent'
+import { useNotification } from '../../lib/contexts/notification-context'
 import { useStore } from '../../lib/contexts/store-context'
 
 const CartScreen = () => {
-  const { cart, updateCart } = useStore()
+  const { cart, updateCart, resetCart } = useStore()
+  const { retrievePaymentIntent, collectPaymentMethod, processPayment } =
+    useStripeTerminal()
+
   const [shippingOptions, setShippingOptions] = useState<ShippingOption[]>([])
   const [paymentSessions, setPaymentSessions] = useState<PaymentSession[]>([])
 
@@ -24,35 +30,103 @@ const CartScreen = () => {
     return null
   }
 
+  const { mutate: setPaymentSession } = useSetPaymentSession(cart.id)
   const { mutate: createPaymentSessions } = useCreatePaymentSession(cart.id)
   const { mutate: complete } = useCompleteCart(cart.id)
 
   useEffect(() => {
     retrieveOptions(cart.id)
-      .then((res) => setShippingOptions(res)) //setShippingOptions(res))
+      .then((res) => setShippingOptions(res))
       .catch((err) => console.log('an error happened', err))
   }, [cart])
 
-  console.log(shippingOptions)
-  // const { shipping_options, isLoading } = useShippingOptions(cart.id)
+  const address = {
+    first_name: 'John',
+    last_name: 'Doe',
+    address_1: 'Grønningen 15',
+    address_2: '3. th',
+    city: 'Copenhagen',
+    country_code: 'DK',
+    postal_code: '1230',
+  }
 
   const initializePaymentSessions = () => {
-    createPaymentSessions(undefined, {
-      onSuccess: ({ cart }) => {
-        setPaymentSessions(cart.payment_sessions)
-      },
+    updateCart({
+      email: 'test@test.test',
+      shipping_address: address,
+      billing_address: address,
+    }).then(() => {
+      createPaymentSessions(undefined, {
+        onSuccess: ({ cart }) => {
+          setPaymentSessions(cart.payment_sessions)
+
+          const stripeSession = cart.payment_sessions.find(
+            (ps) => ps.provider_id === 'stripe'
+          )
+
+          setPaymentSession(
+            { provider_id: 'stripe' },
+            {
+              onSuccess: () => {
+                updateIntent(stripeSession?.data.id as string)
+                  .then(() => {
+                    showNotification({
+                      content: 'Ready to go',
+                      duration: 3000,
+                    })
+                    console.log('updated intent')
+                  })
+                  .catch((err) => console.log(err))
+              },
+            }
+          )
+        },
+      })
     })
   }
 
-  const handlePayment = () => {
-    // CREATE PAYMENT INTENT
-    console.log('done')
-  }
+  const { showNotification, hideNotification } = useNotification()
 
-  const handlePaymentComplete = () => {
-    updateCart({ email: 'test@test.test' }).then(() => {
-      complete(undefined)
+  const handlePayment = async () => {
+    const paymentSession = paymentSessions.find(
+      (ps) => ps.provider_id === 'stripe'
+    )
+
+    if (!paymentSession) {
+      showNotification({ content: 'Stripe is not installed', duration: 3000 })
+      return
+    }
+
+    const { paymentIntent, error } = await retrievePaymentIntent(
+      paymentSession.data.client_secret as string
+    )
+
+    if (!paymentIntent) {
+      console.log(error.message)
+      showNotification({ content: error.message, duration: 3000 })
+      return
+    }
+
+    const paymentIntentId = paymentSession.data.id as string
+
+    const collectRes = await collectPaymentMethod({
+      paymentIntentId: paymentIntent.id,
     })
+
+    if (collectRes.error) {
+      console.log(collectRes.error.message)
+      showNotification({ content: collectRes.error.message, duration: 3000 })
+      return
+    }
+
+    const processRes = await processPayment(paymentIntentId)
+
+    if (processRes.error) {
+      showNotification({ content: processRes.error.message, duration: 3000 })
+      return
+    }
+
+    complete(undefined)
   }
 
   return (
@@ -76,17 +150,15 @@ const CartScreen = () => {
         ))}
       </View>
 
-      <View>
+      <View style={{ marginVertical: 10 }}>
         <Text>Payment</Text>
-        {paymentSessions?.map((so) => (
-          <PaymentElement
-            cartId={cart.id}
-            key={so.id}
-            paymentSession={so}
-            onComplete={handlePaymentComplete}
-          />
-        ))}
+        <TouchableHighlight style={{ padding: 15 }} onPress={handlePayment}>
+          <Text>Complete</Text>
+        </TouchableHighlight>
       </View>
+      <TouchableHighlight style={{ padding: 15 }} onPress={resetCart}>
+        <Text>Reset Cart</Text>
+      </TouchableHighlight>
     </View>
   )
 }
@@ -118,59 +190,10 @@ const ShippingMethodItem = ({
   )
 }
 
-const PaymentElement = ({
-  paymentSession,
-  cartId,
-  onComplete,
-}: {
-  paymentSession: PaymentSession
-  cartId: string
-  onComplete: () => void
-}) => {
-  if (!cartId) {
-    return null
-  }
-
-  const { mutate: setPaymentSession } = useSetPaymentSession(cartId)
-
-  const handlePress = () => {
-    console.log('payment session', paymentSession)
-
-    console.log(
-      `setting payment session with provider id: ${paymentSession.id}`
-    )
-    setPaymentSession(
-      { provider_id: paymentSession.provider_id },
-      {
-        onSuccess: () => {
-          onComplete()
-        },
-      }
-    )
-  }
-
-  switch (paymentSession.provider_id) {
-    case 'manual':
-      // We only display the test payment form if we are in a development environment
-      return process.env.NODE_ENV === 'development' ? (
-        <PaymentTest onPress={handlePress} />
-      ) : null
-    default:
-      return null
-  }
-}
-
-const PaymentTest = ({ onPress }: { onPress: () => void }) => {
-  return (
-    <TouchableHighlight onPress={onPress}>
-      <Text>Manual Payment</Text>
-    </TouchableHighlight>
-  )
-}
-
 type CartItemProps = {
   item: LineItem
 }
+
 const CartItem = ({ item }: CartItemProps) => {
   return (
     <View

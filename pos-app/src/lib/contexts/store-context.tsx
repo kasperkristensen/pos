@@ -78,6 +78,7 @@ const reducer = (
       return {
         ...state,
         cart: action.payload,
+        cart_id: action.payload.id,
       }
     default:
       return state
