@@ -136,6 +136,9 @@ function BottomTabNavigator() {
               }}
             />
           ),
+          tabBarStyle: {
+            display: 'none',
+          },
           tabBarIcon: ({ focused }) => (
             <BarcodeIcon color={focused ? 'iconPrimary' : 'iconPlaceholder'} />
           ),

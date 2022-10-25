@@ -1,21 +1,42 @@
+import { useIsFocused } from '@react-navigation/native'
 import { Reader, useStripeTerminal } from '@stripe/stripe-terminal-react-native'
 import { useEffect } from 'react'
 import { Alert, Pressable, Text, View } from 'react-native'
+import { DiscoveredReader } from '../modules/readers'
 import { RootTabScreenProps } from '../types'
+
+const LOCATION_ID = process.env.LOCATION_ID
 
 const DiscoverReadersScreen = ({
   navigation,
 }: RootTabScreenProps<'DiscoverReader'>) => {
+  const isFocused = useIsFocused()
+
   const {
-    discoverReaders,
     discoveredReaders,
+    connectedReader,
+    discoverReaders,
     connectBluetoothReader,
     cancelDiscovering,
+    disconnectReader,
+    isInitialized,
   } = useStripeTerminal()
 
   useEffect(() => {
-    handleDiscoverReaders()
-  }, [])
+    if (!isInitialized) {
+      return
+    }
+
+    if (connectedReader) {
+      return
+    }
+
+    if (isFocused) {
+      handleDiscoverReaders()
+    } else {
+      cancelDiscovering()
+    }
+  }, [isFocused, isInitialized])
 
   const handleDiscoverReaders = async () => {
     // The list of discovered readers is reported in the `didUpdateDiscoveredReaders` method
@@ -29,10 +50,21 @@ const DiscoverReadersScreen = ({
     }
   }
 
+  const handleDisconnectReader = async () => {
+    const result = await disconnectReader()
+
+    if (result?.error) {
+      Alert.alert(
+        'Disconnect reader error: ',
+        `${result.error.code}, ${result.error.message}`
+      )
+    }
+  }
+
   const handleConnectBluetoothReader = async (selectedReader: Reader.Type) => {
     const { reader, error } = await connectBluetoothReader({
       reader: selectedReader,
-      locationId: 'loc_test',
+      locationId: LOCATION_ID,
     })
 
     if (error) {
@@ -49,6 +81,15 @@ const DiscoverReadersScreen = ({
 
   return (
     <View>
+      {connectedReader && (
+        <View>
+          <Text>{connectedReader.deviceType}</Text>
+          <Text>{((connectedReader.batteryLevel || 0) * 100).toFixed(0)}%</Text>
+          <Pressable onPress={handleDisconnectReader}>
+            <Text>Disconnect</Text>
+          </Pressable>
+        </View>
+      )}
       {discoveredReaders.map((reader) => (
         <View
           key={reader.serialNumber}
@@ -58,7 +99,7 @@ const DiscoverReadersScreen = ({
           }}
         >
           <Pressable onPress={() => handleConnectBluetoothReader(reader)}>
-            <Text>{reader.deviceType}</Text>
+            <DiscoveredReader reader={reader} />
           </Pressable>
         </View>
       ))}
