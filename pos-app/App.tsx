@@ -13,6 +13,8 @@ import Navigation from './src/navigation'
 import { useStripeTerminal } from '@stripe/stripe-terminal-react-native'
 import 'expo-dev-client'
 import { useEffect } from 'react'
+import NotificationProvider from './src/lib/contexts/notification-context'
+import { Notification } from './src/modules/common/notification'
 
 export default function App() {
   const { initialize } = useStripeTerminal()
@@ -32,8 +34,11 @@ export default function App() {
       <SafeAreaProvider>
         <QueryClientProvider client={queryClient}>
           <ThemeProvider>
-            <Navigation colorScheme={colorScheme} />
-            <StatusBar style="dark" />
+            <NotificationProvider>
+              <Notification />
+              <Navigation colorScheme={colorScheme} />
+              <StatusBar style="dark" />
+            </NotificationProvider>
           </ThemeProvider>
         </QueryClientProvider>
       </SafeAreaProvider>

@@ -1,3 +1,4 @@
+import { useIsFocused, useNavigation } from '@react-navigation/native'
 import {
   BarCodeBounds,
   BarCodePoint,
@@ -5,7 +6,10 @@ import {
   BarCodeScanner,
 } from 'expo-barcode-scanner'
 import { useEffect, useState } from 'react'
-import { LayoutChangeEvent, StyleSheet, View } from 'react-native'
+import { LayoutChangeEvent, StatusBar, StyleSheet } from 'react-native'
+import { useNotification } from '../../lib/contexts/notification-context'
+import { Box, Button } from '../common'
+import { CancelIcon, FlipIcon, SearchIcon } from '../icons'
 import { AreaOfInterest } from './area-of-interest'
 import { PermissionMessage } from './permission-message'
 
@@ -43,6 +47,7 @@ export const BarcodeScanner = ({
     useState<CameraDirection>('back')
   const [hasPermission, setHasPermission] = useState<boolean | null>(null)
   const [isArmed, setIsArmed] = useState<boolean>(false)
+  const { goBack, navigate } = useNavigation()
 
   useEffect(() => {
     const getBarCodeScannerPermissions = async () => {
@@ -119,6 +124,19 @@ export const BarcodeScanner = ({
     return false
   }
 
+  const { showNotification, hideNotification } = useNotification()
+  const hasFocus = useIsFocused()
+  useEffect(() => {
+    if (hasFocus) {
+      showNotification({
+        content: 'Point the camera at the barcode to scan the product',
+        duration: 5000,
+      })
+    } else {
+      hideNotification()
+    }
+  }, [hasFocus])
+
   /**
    * Flips the camera direction between back and front facing camera.
    */
@@ -139,11 +157,62 @@ export const BarcodeScanner = ({
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.boundingBox} onLayout={loadBoundingBox}>
+    <Box
+      style={{
+        position: 'relative',
+        flex: 1,
+        alignItems: 'center',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+      }}
+    >
+      {/* Safe area for notifications */}
+      <Box
+        px="l"
+        style={StyleSheet.flatten([
+          styles.tooltipArea,
+          {
+            marginTop: StatusBar.currentHeight,
+          },
+        ])}
+      />
+
+      <Box style={styles.boundingBox} px="l" onLayout={loadBoundingBox}>
         <AreaOfInterest />
         <PermissionMessage hasPermission={hasPermission} />
-      </View>
+      </Box>
+
+      <Box style={styles.actionsArea}>
+        <Button
+          radii="full"
+          backgroundColor="overlay"
+          onPress={flipCamera}
+          style={styles.smallButton}
+        >
+          <FlipIcon color="iconOnColor" />
+        </Button>
+        <Button
+          radii="full"
+          backgroundColor="overlay"
+          onPress={goBack}
+          style={styles.largeButton}
+          mx="l"
+        >
+          <CancelIcon color="iconOnColor" />
+        </Button>
+        <Button
+          radii="full"
+          backgroundColor="overlay"
+          onPress={() =>
+            navigate('Root', {
+              screen: 'Search',
+            })
+          }
+          style={styles.smallButton}
+        >
+          <SearchIcon color="iconOnColor" />
+        </Button>
+      </Box>
 
       {hasPermission && (
         <BarCodeScanner
@@ -152,7 +221,7 @@ export const BarcodeScanner = ({
           type={cameraDirection}
         />
       )}
-    </View>
+    </Box>
   )
 }
 
@@ -160,13 +229,45 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'column',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     alignItems: 'center',
   },
   boundingBox: {
-    width: 326,
-    height: 312,
+    width: '100%',
+    height: 342,
     position: 'relative',
-    zIndex: 1,
+    zIndex: 2,
+  },
+  tooltipArea: {
+    width: '100%',
+    height: 144,
+    zIndex: 2,
+    position: 'relative',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+  },
+  actionsArea: {
+    width: '100%',
+    height: 72,
+    marginBottom: 72,
+    zIndex: 2,
+    position: 'relative',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  smallButton: {
+    opacity: 0.5,
+    width: 56,
+    height: 56,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  largeButton: {
+    width: 72,
+    height: 72,
+    opacity: 0.5,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 })
