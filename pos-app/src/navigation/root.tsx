@@ -6,12 +6,14 @@ import { Box } from '../modules/common'
 import {
   BarcodeIcon,
   CogIcon,
+  EyeIcon,
   HelpIcon,
   HomeIcon,
   MenuIcon,
   SearchIcon,
 } from '../modules/icons'
 import TabButton from '../modules/navigation/tab-button'
+import CartScreen from '../screens/app/checkout-screen'
 import ProductScreen from '../screens/app/product-screen'
 import SearchScreen from '../screens/app/search-screen'
 import BarcodeScreen from '../screens/barcode-screen'
@@ -166,6 +168,17 @@ function BottomTabNavigator() {
           },
           tabBarIcon: ({ focused }) => (
             <BarcodeIcon color={focused ? 'iconPrimary' : 'iconPlaceholder'} />
+          ),
+        }}
+      />
+      <BottomTab.Screen
+        name="Cart"
+        component={CartScreen}
+        options={{
+          title: 'Cart',
+          tabBarButton: (props) => <TabButton {...props} />,
+          tabBarIcon: ({ focused }) => (
+            <EyeIcon color={focused ? 'iconPrimary' : 'iconPlaceholder'} />
           ),
         }}
       />

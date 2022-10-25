@@ -1,5 +1,5 @@
 import { useIsFocused } from '@react-navigation/native'
-import React from 'react'
+import { useState } from 'react'
 import { StyleSheet, View } from 'react-native'
 import { retrieveVariant } from '../lib/api/variants/retrieve'
 import { useNotification } from '../lib/contexts/notification-context'
@@ -20,8 +20,7 @@ export default function BarcodeScreen({
 
   const isFocused = useIsFocused()
   const { hideNotification, showNotification } = useNotification()
-
-  const [isLoading, setIsLoading] = React.useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
   const handleBarcodeScanned = async (barcode: string) => {
     setIsLoading(true)

@@ -11,5 +11,10 @@ export default (app: Router): Router => {
     middlewares.wrap(require("./connection-token").default)
   );
 
+  route.post(
+    "/update-intent/:paymentIntent",
+    middlewares.wrap(require("./update-payment-method-type").default)
+  );
+
   return app;
 };

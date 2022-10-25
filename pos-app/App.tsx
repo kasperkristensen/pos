@@ -11,10 +11,11 @@ import Navigation from './src/navigation'
 
 import { useStripeTerminal } from '@stripe/stripe-terminal-react-native'
 import 'expo-dev-client'
-import { MedusaProvider } from 'medusa-react'
+import { CartProvider, MedusaProvider } from 'medusa-react'
 import { useEffect } from 'react'
 import { BACKEND_URL } from './src/constants/api-client'
 import NotificationProvider from './src/lib/contexts/notification-context'
+import { StoreProvider } from './src/lib/contexts/store-context'
 import { Notification } from './src/modules/common/notification'
 
 export default function App() {
@@ -41,9 +42,13 @@ export default function App() {
         >
           <ThemeProvider>
             <NotificationProvider>
-              <Notification />
-              <Navigation colorScheme={colorScheme} />
-              <StatusBar style="dark" />
+              <CartProvider>
+                <StoreProvider>
+                  <Notification />
+                  <Navigation colorScheme={colorScheme} />
+                  <StatusBar style="dark" />
+                </StoreProvider>
+              </CartProvider>
             </NotificationProvider>
           </ThemeProvider>
         </MedusaProvider>
