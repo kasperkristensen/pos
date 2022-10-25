@@ -1,7 +1,9 @@
 import { useIsFocused } from '@react-navigation/native'
+import { useCart } from 'medusa-react'
 import { useEffect, useState } from 'react'
-import { SafeAreaView, StatusBar, StyleSheet } from 'react-native'
+import { SafeAreaView, StatusBar, StyleSheet, Text } from 'react-native'
 import { themeColors } from '../../constants/Colors'
+import { useStore } from '../../lib/contexts/store-context'
 import { useTheme } from '../../lib/contexts/theme-context'
 import BarcodeScanner from '../../modules/barcode-scanner'
 import { Box } from '../../modules/common'
@@ -29,9 +31,14 @@ export default function SearchScreen({
     setUseScanner(!useScanner)
   }
 
+  const { cart } = useStore()
+
   return (
     <DismissKeyboardView style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
+        {cart?.items.map((i) => (
+          <Text>{i.quantity}</Text>
+        ))}
         <Box
           px="l"
           pb="base"

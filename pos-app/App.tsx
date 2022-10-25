@@ -15,6 +15,9 @@ import 'expo-dev-client'
 import { useEffect } from 'react'
 import NotificationProvider from './src/lib/contexts/notification-context'
 import { Notification } from './src/modules/common/notification'
+import { StoreProvider } from './src/lib/contexts/store-context'
+import { CartProvider, MedusaProvider } from 'medusa-react'
+import { BACKEND_URL, medusaQueryClient } from './src/constants/api-client'
 
 export default function App() {
   const { initialize } = useStripeTerminal()
@@ -33,13 +36,24 @@ export default function App() {
     return (
       <SafeAreaProvider>
         <QueryClientProvider client={queryClient}>
-          <ThemeProvider>
-            <NotificationProvider>
-              <Notification />
-              <Navigation colorScheme={colorScheme} />
-              <StatusBar style="dark" />
-            </NotificationProvider>
-          </ThemeProvider>
+          <MedusaProvider
+            baseUrl={BACKEND_URL}
+            queryClientProviderProps={{
+              client: medusaQueryClient,
+            }}
+          >
+            <CartProvider>
+              <StoreProvider>
+                <ThemeProvider>
+                  <NotificationProvider>
+                    <Notification />
+                    <Navigation colorScheme={colorScheme} />
+                    <StatusBar style="dark" />
+                  </NotificationProvider>
+                </ThemeProvider>
+              </StoreProvider>
+            </CartProvider>
+          </MedusaProvider>
         </QueryClientProvider>
       </SafeAreaProvider>
     )
