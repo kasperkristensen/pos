@@ -30,6 +30,7 @@ export type RootStackParamList = {
 export type MainStackParamList = {
   Bottom: NavigatorScreenParams<BottomTabParamList> | undefined
   Product: { barcode: string; variant: ProductVariant }
+  ReaderSettings: undefined
 }
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> =
@@ -41,8 +42,6 @@ export type BottomTabParamList = {
   Search: undefined
   BarcodeScanner: undefined
   Cart: undefined
-  DiscoverReader: undefined
-  Product: undefined
 }
 
 export type BottomScreenProps<Screen extends keyof BottomTabParamList> =

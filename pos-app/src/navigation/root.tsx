@@ -4,20 +4,19 @@ import { Pressable } from 'react-native'
 import { useTheme } from '../lib/contexts/theme-context'
 import { Box } from '../modules/common'
 import {
+  BagIcon,
   BarcodeIcon,
   CogIcon,
-  EyeIcon,
   HelpIcon,
   HomeIcon,
-  MenuIcon,
   SearchIcon,
 } from '../modules/icons'
 import TabButton from '../modules/navigation/tab-button'
 import CartScreen from '../screens/app/checkout-screen'
 import ProductScreen from '../screens/app/product-screen'
+import ReaderSettings from '../screens/app/reader-settings-screen'
 import SearchScreen from '../screens/app/search-screen'
 import BarcodeScreen from '../screens/barcode-screen'
-import DiscoverReadersScreen from '../screens/discover-readers-screen'
 import Home from '../screens/home'
 import ModalScreen from '../screens/ModalScreen'
 import NotFoundScreen from '../screens/NotFoundScreen'
@@ -64,6 +63,13 @@ const MainNavigator = () => {
         <Main.Screen
           name="Product"
           component={ProductScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Main.Screen
+          name="ReaderSettings"
+          component={ReaderSettings}
           options={{
             headerShown: false,
           }}
@@ -126,7 +132,11 @@ function BottomTabNavigator() {
           headerRight: () => (
             <Box radii="none" pr="l" backgroundColor="transparent">
               <Pressable
-                onPress={() => navigation.navigate('Scanner')}
+                onPress={() =>
+                  navigation.navigate('Root', {
+                    screen: 'ReaderSettings',
+                  })
+                }
                 style={({ pressed }) => ({
                   opacity: pressed ? 0.5 : 1,
                 })}
@@ -178,18 +188,7 @@ function BottomTabNavigator() {
           title: 'Cart',
           tabBarButton: (props) => <TabButton {...props} />,
           tabBarIcon: ({ focused }) => (
-            <EyeIcon color={focused ? 'iconPrimary' : 'iconPlaceholder'} />
-          ),
-        }}
-      />
-      <BottomTab.Screen
-        name="DiscoverReader"
-        component={DiscoverReadersScreen}
-        options={{
-          title: 'Cart',
-          tabBarButton: (props) => <TabButton {...props} />,
-          tabBarIcon: ({ focused }) => (
-            <MenuIcon color={focused ? 'iconPrimary' : 'iconPlaceholder'} />
+            <BagIcon color={focused ? 'iconPrimary' : 'iconPlaceholder'} />
           ),
         }}
       />
