@@ -1,9 +1,9 @@
 import { useProduct } from 'medusa-react'
-import { Pressable, SafeAreaView, ScrollView, StyleSheet } from 'react-native'
+import { SafeAreaView, ScrollView, StyleSheet } from 'react-native'
 import useVariant from '../../lib/api/variants/retrieve'
 import { useStore } from '../../lib/contexts/store-context'
+import { AddLineItemModal } from '../../modules/cart'
 import { Box, Button, Divider, Text } from '../../modules/common'
-import { BackIcon } from '../../modules/icons'
 import { ImageSlider } from '../../modules/product'
 import { ActionScreenProps } from '../../types'
 
@@ -41,7 +41,7 @@ export default function ProductScreen({
   return (
     <Box backgroundColor="background" style={styles.container}>
       <SafeAreaView>
-        <Box pb="base" px="l" pt="l" style={styles.header}>
+        <Box pb="base" px="l" style={styles.header}>
           <Box>
             <Text variant="large" style={styles.title}>
               {product?.title} ({variant?.title})
@@ -50,9 +50,6 @@ export default function ProductScreen({
               From 1.345,00 kr.
             </Text>
           </Box>
-          <Pressable onPress={handleBack}>
-            <BackIcon color="iconPlaceholder" />
-          </Pressable>
         </Box>
       </SafeAreaView>
       <ScrollView>
@@ -98,6 +95,7 @@ export default function ProductScreen({
           </Button>
         </Box>
       </SafeAreaView>
+      <AddLineItemModal />
     </Box>
   )
 }
@@ -107,6 +105,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
+    paddingTop: 36,
     flexDirection: 'row',
     justifyContent: 'space-between',
   },

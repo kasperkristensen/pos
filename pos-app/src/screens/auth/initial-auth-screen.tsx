@@ -51,7 +51,7 @@ export default function InitialAuthScreen({
           backgroundColor="primary"
           radii="m"
           mt="l"
-          mb="xxxl"
+          mb="xxxxl"
           style={{
             width: '100%',
             aspectRatio: 1 / 1,

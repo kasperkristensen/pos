@@ -13,12 +13,12 @@ import {
 } from '../modules/icons'
 import TabButton from '../modules/navigation/tab-button'
 import CartScreen from '../screens/app/checkout-screen'
+import OrderConfirmedScreen from '../screens/app/order-confirmed-screen'
 import ProductScreen from '../screens/app/product-screen'
 import ReaderSettings from '../screens/app/reader-settings-screen'
 import SearchScreen from '../screens/app/search-screen'
 import BarcodeScreen from '../screens/barcode-screen'
 import Home from '../screens/home'
-import ModalScreen from '../screens/ModalScreen'
 import NotFoundScreen from '../screens/NotFoundScreen'
 import {
   BottomScreenProps,
@@ -42,9 +42,6 @@ const RootNavigator = () => {
         component={NotFoundScreen}
         options={{ title: 'Oops!' }}
       />
-      <Stack.Group screenOptions={{ presentation: 'modal' }}>
-        <Stack.Screen name="Modal" component={ModalScreen} />
-      </Stack.Group>
     </Stack.Navigator>
   )
 }
@@ -61,6 +58,20 @@ const MainNavigator = () => {
       />
       <Main.Group>
         <Main.Screen
+          name="ReaderSettings"
+          component={ReaderSettings}
+          options={{
+            headerShown: false,
+          }}
+        />
+      </Main.Group>
+      <Main.Group
+        screenOptions={{
+          presentation: 'modal',
+          gestureEnabled: false,
+        }}
+      >
+        <Main.Screen
           name="Product"
           component={ProductScreen}
           options={{
@@ -68,8 +79,8 @@ const MainNavigator = () => {
           }}
         />
         <Main.Screen
-          name="ReaderSettings"
-          component={ReaderSettings}
+          name="OrderConfirmed"
+          component={OrderConfirmedScreen}
           options={{
             headerShown: false,
           }}
@@ -120,7 +131,6 @@ function BottomTabNavigator() {
           headerLeft: () => (
             <Box radii="none" pl="l" backgroundColor="transparent">
               <Pressable
-                onPress={() => navigation.navigate('Scanner')}
                 style={({ pressed }) => ({
                   opacity: pressed ? 0.5 : 1,
                 })}

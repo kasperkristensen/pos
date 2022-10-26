@@ -3,7 +3,7 @@
  * https://reactnavigation.org/docs/typescript/
  */
 
-import { ProductVariant } from '@medusajs/medusa'
+import { Order, ProductVariant } from '@medusajs/medusa'
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs'
 import {
   CompositeScreenProps,
@@ -31,6 +31,7 @@ export type MainStackParamList = {
   Bottom: NavigatorScreenParams<BottomTabParamList> | undefined
   Product: { barcode: string; variant: ProductVariant }
   ReaderSettings: undefined
+  OrderConfirmed: { order: Order }
 }
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> =
