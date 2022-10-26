@@ -47,7 +47,7 @@ export const BarcodeScanner = ({
     useState<CameraDirection>('back')
   const [hasPermission, setHasPermission] = useState<boolean | null>(null)
   const [isArmed, setIsArmed] = useState<boolean>(false)
-  const { goBack, navigate } = useNavigation()
+  const { navigate } = useNavigation()
 
   useEffect(() => {
     const getBarCodeScannerPermissions = async () => {
@@ -132,10 +132,28 @@ export const BarcodeScanner = ({
         content: 'Point the camera at the barcode to scan the product',
         duration: 5000,
       })
-    } else {
-      hideNotification()
     }
   }, [hasFocus])
+
+  const goHome = () => {
+    hideNotification()
+    navigate('Root', {
+      screen: 'Bottom',
+      params: {
+        screen: 'Home',
+      },
+    })
+  }
+
+  const goToSearch = () => {
+    hideNotification()
+    navigate('Root', {
+      screen: 'Bottom',
+      params: {
+        screen: 'Search',
+      },
+    })
+  }
 
   /**
    * Flips the camera direction between back and front facing camera.
@@ -194,7 +212,7 @@ export const BarcodeScanner = ({
         <Button
           radii="full"
           backgroundColor="overlay"
-          onPress={goBack}
+          onPress={goHome}
           style={styles.largeButton}
           mx="l"
         >
@@ -203,11 +221,7 @@ export const BarcodeScanner = ({
         <Button
           radii="full"
           backgroundColor="overlay"
-          onPress={() =>
-            navigate('Root', {
-              screen: 'Search',
-            })
-          }
+          onPress={goToSearch}
           style={styles.smallButton}
         >
           <SearchIcon color="iconOnColor" />

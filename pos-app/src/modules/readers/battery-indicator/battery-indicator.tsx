@@ -64,7 +64,7 @@ export const getCharge = (level?: number) => {
     return 0
   }
 
-  return (level * 100).toFixed(0)
+  return (level * 100).toFixed(0) + '%'
 }
 
 const styles = StyleSheet.create({

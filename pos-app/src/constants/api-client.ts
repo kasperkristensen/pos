@@ -1,9 +1,9 @@
-import Medusa from "@medusajs/medusa-js"
-import { QueryClient } from "react-query"
+import Medusa from '@medusajs/medusa-js'
 import axios from 'axios'
+import { QueryClient } from 'react-query'
 
 const BACKEND_URL =
-  process.env.BACKEND_URL || 'https://f371-109-178-130-188.ngrok.io'
+  process.env.BACKEND_URL || 'http://ddab-83-151-141-70.ngrok.io'
 
 const apiClient = axios.create({
   baseURL: `${BACKEND_URL}/pos`,
@@ -32,6 +32,6 @@ const medusaQueryClient = new QueryClient({
 
 const medusaClient = new Medusa({ baseUrl: BACKEND_URL, maxRetries: 3 })
 
-export { BACKEND_URL, medusaQueryClient, medusaClient }
+export { BACKEND_URL, medusaClient }
 
 export default apiClient

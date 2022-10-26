@@ -1,1 +1,1 @@
-export { DiscoveredReader as default } from './discovered-reader'
+export { Reader as default } from './discovered-reader'

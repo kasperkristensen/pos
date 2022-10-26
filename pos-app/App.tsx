@@ -1,4 +1,3 @@
-import { QueryClientProvider } from '@tanstack/react-query'
 import { StatusBar } from 'expo-status-bar'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import queryClient from './src/constants/query-client'
@@ -12,12 +11,12 @@ import Navigation from './src/navigation'
 
 import { useStripeTerminal } from '@stripe/stripe-terminal-react-native'
 import 'expo-dev-client'
-import { useEffect } from 'react'
-import NotificationProvider from './src/lib/contexts/notification-context'
-import { Notification } from './src/modules/common/notification'
-import { StoreProvider } from './src/lib/contexts/store-context'
 import { CartProvider, MedusaProvider } from 'medusa-react'
-import { BACKEND_URL, medusaQueryClient } from './src/constants/api-client'
+import { useEffect } from 'react'
+import { BACKEND_URL } from './src/constants/api-client'
+import NotificationProvider from './src/lib/contexts/notification-context'
+import { StoreProvider } from './src/lib/contexts/store-context'
+import { Notification } from './src/modules/common/notification'
 
 export default function App() {
   const { initialize } = useStripeTerminal()
@@ -35,26 +34,24 @@ export default function App() {
   } else {
     return (
       <SafeAreaProvider>
-        <QueryClientProvider client={queryClient}>
-          <MedusaProvider
-            baseUrl={BACKEND_URL}
-            queryClientProviderProps={{
-              client: medusaQueryClient,
-            }}
-          >
-            <CartProvider>
-              <StoreProvider>
-                <ThemeProvider>
-                  <NotificationProvider>
-                    <Notification />
-                    <Navigation colorScheme={colorScheme} />
-                    <StatusBar style="dark" />
-                  </NotificationProvider>
-                </ThemeProvider>
-              </StoreProvider>
-            </CartProvider>
-          </MedusaProvider>
-        </QueryClientProvider>
+        <MedusaProvider
+          baseUrl={BACKEND_URL}
+          queryClientProviderProps={{
+            client: queryClient,
+          }}
+        >
+          <ThemeProvider>
+            <NotificationProvider>
+              <CartProvider>
+                <StoreProvider>
+                  <Notification />
+                  <Navigation colorScheme={colorScheme} />
+                  <StatusBar style="dark" />
+                </StoreProvider>
+              </CartProvider>
+            </NotificationProvider>
+          </ThemeProvider>
+        </MedusaProvider>
       </SafeAreaProvider>
     )
   }

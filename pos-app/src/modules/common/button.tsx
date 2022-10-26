@@ -6,12 +6,13 @@ import { cleanProps, getSpacing } from '../../lib/utils/get-spacing'
 
 type Props = {
   backgroundColor: keyof Theme['colors']
-  radii: keyof Theme['radii']
+  radii?: keyof Theme['radii']
+  border?: keyof Theme['borderVariants']
 } & SpacingStyles &
   React.ComponentProps<typeof Pressable>
 
 export const Button = forwardRef<View, Props>(
-  ({ style, backgroundColor, radii, ...rest }, ref) => {
+  ({ style, backgroundColor, border, radii, ...rest }, ref) => {
     const { theme } = useTheme()
     const { spacingProps, ...clean } = cleanProps(rest)
 
@@ -20,8 +21,9 @@ export const Button = forwardRef<View, Props>(
         ref={ref}
         style={StyleSheet.flatten([
           {
-            backgroundColor: theme.colors[backgroundColor],
-            borderRadius: theme.radii[radii],
+            backgroundColor: theme.colors[backgroundColor || 'transparent'],
+            borderRadius: theme.radii[radii || 'none'],
+            ...theme.borderVariants[border || 'none'],
           },
           getSpacing(spacingProps, theme),
           style,

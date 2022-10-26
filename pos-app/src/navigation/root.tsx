@@ -4,26 +4,27 @@ import { Pressable } from 'react-native'
 import { useTheme } from '../lib/contexts/theme-context'
 import { Box } from '../modules/common'
 import {
+  BagIcon,
   BarcodeIcon,
   CogIcon,
-  EyeIcon,
   HelpIcon,
   HomeIcon,
-  MenuIcon,
   SearchIcon,
 } from '../modules/icons'
 import TabButton from '../modules/navigation/tab-button'
 import CartScreen from '../screens/app/checkout-screen'
+import ProductScreen from '../screens/app/product-screen'
+import ReaderSettings from '../screens/app/reader-settings-screen'
 import SearchScreen from '../screens/app/search-screen'
 import BarcodeScreen from '../screens/barcode-screen'
-import DiscoverReadersScreen from '../screens/discover-readers-screen'
+import Home from '../screens/home'
 import ModalScreen from '../screens/ModalScreen'
 import NotFoundScreen from '../screens/NotFoundScreen'
-import TabOneScreen from '../screens/TabOneScreen'
 import {
+  BottomScreenProps,
+  BottomTabParamList,
+  MainStackParamList,
   RootStackParamList,
-  RootTabParamList,
-  RootTabScreenProps,
 } from '../types'
 
 const Stack = createNativeStackNavigator<RootStackParamList>()
@@ -33,7 +34,7 @@ const RootNavigator = () => {
     <Stack.Navigator>
       <Stack.Screen
         name="Root"
-        component={BottomTabNavigator}
+        component={MainNavigator}
         options={{ headerShown: false }}
       />
       <Stack.Screen
@@ -48,11 +49,41 @@ const RootNavigator = () => {
   )
 }
 
+const Main = createNativeStackNavigator<MainStackParamList>()
+
+const MainNavigator = () => {
+  return (
+    <Main.Navigator>
+      <Main.Screen
+        name="Bottom"
+        component={BottomTabNavigator}
+        options={{ headerShown: false }}
+      />
+      <Main.Group>
+        <Main.Screen
+          name="Product"
+          component={ProductScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Main.Screen
+          name="ReaderSettings"
+          component={ReaderSettings}
+          options={{
+            headerShown: false,
+          }}
+        />
+      </Main.Group>
+    </Main.Navigator>
+  )
+}
+
 /**
  * A bottom tab navigator displays tab buttons on the bottom of the display to switch screens.
  * https://reactnavigation.org/docs/bottom-tab-navigator
  */
-const BottomTab = createBottomTabNavigator<RootTabParamList>()
+const BottomTab = createBottomTabNavigator<BottomTabParamList>()
 
 function BottomTabNavigator() {
   const { theme } = useTheme()
@@ -71,9 +102,9 @@ function BottomTabNavigator() {
       }}
     >
       <BottomTab.Screen
-        name="User"
-        component={TabOneScreen}
-        options={({ navigation }: RootTabScreenProps<'User'>) => ({
+        name="Home"
+        component={Home}
+        options={({ navigation }: BottomScreenProps<'Home'>) => ({
           title: 'Home',
           tabBarButton: (props) => <TabButton {...props} />,
           tabBarIcon: ({ focused }) => (
@@ -101,7 +132,11 @@ function BottomTabNavigator() {
           headerRight: () => (
             <Box radii="none" pr="l" backgroundColor="transparent">
               <Pressable
-                onPress={() => navigation.navigate('Scanner')}
+                onPress={() =>
+                  navigation.navigate('Root', {
+                    screen: 'ReaderSettings',
+                  })
+                }
                 style={({ pressed }) => ({
                   opacity: pressed ? 0.5 : 1,
                 })}
@@ -153,18 +188,7 @@ function BottomTabNavigator() {
           title: 'Cart',
           tabBarButton: (props) => <TabButton {...props} />,
           tabBarIcon: ({ focused }) => (
-            <EyeIcon color={focused ? 'iconPrimary' : 'iconPlaceholder'} />
-          ),
-        }}
-      />
-      <BottomTab.Screen
-        name="DiscoverReader"
-        component={DiscoverReadersScreen}
-        options={{
-          title: 'Cart',
-          tabBarButton: (props) => <TabButton {...props} />,
-          tabBarIcon: ({ focused }) => (
-            <MenuIcon color={focused ? 'iconPrimary' : 'iconPlaceholder'} />
+            <BagIcon color={focused ? 'iconPrimary' : 'iconPlaceholder'} />
           ),
         }}
       />

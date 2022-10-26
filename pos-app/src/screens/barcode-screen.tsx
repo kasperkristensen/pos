@@ -1,11 +1,10 @@
 import { useIsFocused } from '@react-navigation/native'
-import { useAdminDeleteReturnReason } from 'medusa-react'
-import React, { useContext } from 'react'
+import { useState } from 'react'
 import { StyleSheet, View } from 'react-native'
-import { request } from '../lib/api/variants/inventory-status'
-import { useStore } from '../lib/contexts/store-context'
+import { retrieveVariant } from '../lib/api/variants/retrieve'
+import { useNotification } from '../lib/contexts/notification-context'
 import BarcodeScanner from '../modules/barcode-scanner'
-import { RootTabScreenProps } from '../types'
+import { BottomScreenProps } from '../types'
 
 type BoundingBox = {
   minX: number
@@ -16,28 +15,34 @@ type BoundingBox = {
 
 export default function BarcodeScreen({
   navigation,
-}: RootTabScreenProps<'BarcodeScanner'>) {
-  const isFocused = useIsFocused()
+}: BottomScreenProps<'BarcodeScanner'>) {
+  const { navigate } = navigation
 
-  const { addItem } = useStore()
-  const [isLoading, setIsLoading] = React.useState(false)
+  const isFocused = useIsFocused()
+  const { hideNotification, showNotification } = useNotification()
+  const [isLoading, setIsLoading] = useState(false)
 
   const handleBarcodeScanned = async (barcode: string) => {
     setIsLoading(true)
 
-    request(barcode)
-      .then((variantStatus) => {
-        Object.keys(variantStatus).forEach((variant: string) => {
-          if (variantStatus[variant]) {
-            addItem({ variantId: variant, quantity: 1 })
-          }
-        })
+    retrieveVariant(barcode)
+      .then(({ variant }) => {
         setIsLoading(false)
-        alert('Item added to cart')
+        hideNotification()
+        navigate('Root', {
+          screen: 'Product',
+          params: {
+            variant,
+            barcode,
+          },
+        })
       })
       .catch((error) => {
         setIsLoading(false)
-        alert(JSON.stringify(error, null, 2))
+        showNotification({
+          content: error.message,
+          duration: 3000,
+        })
       })
   }
 
