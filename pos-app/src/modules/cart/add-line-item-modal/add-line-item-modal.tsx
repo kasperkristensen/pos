@@ -12,6 +12,7 @@ export const AddLineItemModal = () => {
   const { navigate } = useNavigation()
 
   const opacity = useRef(new Animated.Value(0)).current
+  const position = useRef(new Animated.Value(412)).current
 
   const fadeIn = useCallback(() => {
     Animated.timing(opacity, {
@@ -26,21 +27,47 @@ export const AddLineItemModal = () => {
       toValue: 0,
       duration: FADE_OUT_DURATION,
       useNativeDriver: true,
+    }).start()
+  }, [opacity])
+
+  const slideUp = useCallback(() => {
+    Animated.timing(position, {
+      toValue: 0,
+      duration: FADE_IN_DURATION,
+      useNativeDriver: true,
+    }).start()
+  }, [position])
+
+  const slideDown = useCallback(() => {
+    Animated.timing(position, {
+      toValue: 412,
+      duration: FADE_OUT_DURATION,
+      useNativeDriver: true,
     }).start(() => {
       clearAddLineItemState()
     })
-  }, [opacity, clearAddLineItemState])
+  }, [position, clearAddLineItemState])
+
+  const runEnterAnimations = useCallback(() => {
+    fadeIn()
+    slideUp()
+  }, [])
+
+  const runExitAnimations = useCallback(() => {
+    fadeOut()
+    slideDown()
+  }, [])
 
   useEffect(() => {
     if (!addLineItemState) {
       return
     }
 
-    fadeIn()
+    runEnterAnimations()
   }, [addLineItemState, fadeIn])
 
   const goToCart = () => {
-    clearAddLineItemState()
+    runExitAnimations()
     navigate('Root', {
       screen: 'Bottom',
       params: {
@@ -61,6 +88,7 @@ export const AddLineItemModal = () => {
         StyleSheet.absoluteFillObject,
         styles.container,
       ])}
+      backgroundColor="transparent"
     >
       <AnimatedBox
         style={[styles.overlay, opacity]}
@@ -68,7 +96,7 @@ export const AddLineItemModal = () => {
       />
       <AnimatedBox
         px="l"
-        style={styles.modal}
+        style={[styles.modal, { transform: [{ translateY: position }] }]}
         backgroundColor="background"
         radii="xl"
       >
