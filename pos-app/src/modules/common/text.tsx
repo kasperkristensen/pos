@@ -31,7 +31,7 @@ export const Text = forwardRef<RNText, Props>(
           {
             color: theme.colors[color],
             ...theme.textVariants[variant],
-            fontWeight: theme.fontWeights[weight],
+            ...theme.fontWeights[weight],
           },
           getSpacing(spacingProps, theme),
           style,

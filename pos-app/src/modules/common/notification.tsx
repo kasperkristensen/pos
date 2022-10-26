@@ -48,10 +48,6 @@ export const Notification = () => {
     return null
   }
 
-  if (!options) {
-    return null
-  }
-
   const { content } = options
 
   const AnimatedBox = Animated.createAnimatedComponent(Box)

@@ -16,9 +16,14 @@ const palette = {
   alizarinCrimson: '#da1e28',
 }
 
-const bodyFontFamily = {
+const regular = {
   fontFamily: 'inter-regular',
   fontWeight: '400' as const,
+}
+
+const semibold = {
+  fontFamily: 'inter-semibold',
+  fontWeight: '600' as const,
 }
 
 export const theme = {
@@ -66,6 +71,8 @@ export const theme = {
     xs: 2,
     s: 4,
     m: 8,
+    l: 12,
+    xl: 16,
     full: 9999,
   },
   borderVariants: {
@@ -88,32 +95,31 @@ export const theme = {
     },
   },
   fontWeights: {
-    regular: '400' as const,
-    semibold: '600' as const,
+    regular: {
+      ...regular,
+    },
+    semibold: {
+      ...semibold,
+    },
   },
   textVariants: {
     small: {
-      ...bodyFontFamily,
       fontSize: 12,
       lineHeight: 20,
     },
     base: {
-      ...bodyFontFamily,
       fontSize: 14,
       lineHeight: 24,
     },
     large: {
-      ...bodyFontFamily,
       fontSize: 16,
       lineHeight: 24,
     },
     xlarge: {
-      ...bodyFontFamily,
       fontSize: 24,
       lineHeight: 36,
     },
     xxlarge: {
-      ...bodyFontFamily,
       fontSize: 30,
       lineHeight: 48,
     },
