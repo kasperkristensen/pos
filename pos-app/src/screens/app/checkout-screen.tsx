@@ -12,7 +12,13 @@ import {
   useSetPaymentSession,
 } from 'medusa-react'
 import { useEffect, useState } from 'react'
-import { Image, Text, TouchableHighlight, View } from 'react-native'
+import {
+  ActivityIndicator,
+  Image,
+  Text,
+  TouchableHighlight,
+  View,
+} from 'react-native'
 import { retrieveOptions } from '../../lib/api/cart/get-shipping-options'
 import { updateIntent } from '../../lib/api/cart/update-payment-intent'
 import { useNotification } from '../../lib/contexts/notification-context'
@@ -25,19 +31,42 @@ const CartScreen = () => {
 
   const [shippingOptions, setShippingOptions] = useState<ShippingOption[]>([])
   const [paymentSessions, setPaymentSessions] = useState<PaymentSession[]>([])
+  const [canPay, setCanPay] = useState<boolean>(false)
 
   if (!cart) {
     return null
   }
 
+  const { mutate: addShipping } = useAddShippingMethodToCart(cart.id)
   const { mutate: setPaymentSession } = useSetPaymentSession(cart.id)
   const { mutate: createPaymentSessions } = useCreatePaymentSession(cart.id)
   const { mutate: complete } = useCompleteCart(cart.id)
 
   useEffect(() => {
+    const manualShippingOptions = shippingOptions.filter(
+      (so) => so.provider_id === 'manual'
+    )
+    if (manualShippingOptions.length !== 1 || canPay) {
+      return
+    }
+
+    addShipping(
+      { option_id: manualShippingOptions[0].id },
+      {
+        onError: (error) => alert(error),
+        onSuccess: initializePaymentSessions,
+      }
+    )
+  }, [shippingOptions])
+
+  useEffect(() => {
     retrieveOptions(cart.id)
       .then((res) => setShippingOptions(res))
-      .catch((err) => console.log('an error happened', err))
+      .catch((err) =>
+        showNotification({
+          content: err.message,
+        })
+      )
   }, [cart])
 
   const address = {
@@ -70,11 +99,11 @@ const CartScreen = () => {
               onSuccess: () => {
                 updateIntent(stripeSession?.data.id as string)
                   .then(() => {
+                    setCanPay(true)
                     showNotification({
                       content: 'Ready to go',
                       duration: 3000,
                     })
-                    console.log('updated intent')
                   })
                   .catch((err) => console.log(err))
               },
@@ -138,27 +167,43 @@ const CartScreen = () => {
         ))}
       </View>
 
-      <View>
-        <Text>Shipping Method</Text>
-        {shippingOptions?.map((so) => (
-          <ShippingMethodItem
-            so={so}
-            cart={cart.id}
-            key={so.id}
-            onSelect={initializePaymentSessions}
-          />
-        ))}
-      </View>
+      {shippingOptions.length > 1 ? (
+        <View>
+          <Text>Shipping Method</Text>
+          {shippingOptions?.map((so) => (
+            <ShippingMethodItem
+              so={so}
+              cart={cart.id}
+              key={so.id}
+              onSelect={initializePaymentSessions}
+            />
+          ))}
+        </View>
+      ) : null}
 
       <View style={{ marginVertical: 10 }}>
-        <Text>Payment</Text>
-        <TouchableHighlight style={{ padding: 15 }} onPress={handlePayment}>
-          <Text>Complete</Text>
+        {canPay ? (
+          <TouchableHighlight
+            style={{
+              padding: 15,
+              width: '100%',
+              marginBottom: 10,
+              alignItems: 'center',
+            }}
+            onPress={handlePayment}
+          >
+            <Text>Pay Order</Text>
+          </TouchableHighlight>
+        ) : (
+          <ActivityIndicator size="large" />
+        )}
+        <TouchableHighlight
+          style={{ padding: 15, alignItems: 'center', width: '100%' }}
+          onPress={resetCart}
+        >
+          <Text>Clear Cart</Text>
         </TouchableHighlight>
       </View>
-      <TouchableHighlight style={{ padding: 15 }} onPress={resetCart}>
-        <Text>Reset Cart</Text>
-      </TouchableHighlight>
     </View>
   )
 }
@@ -199,6 +244,7 @@ const CartItem = ({ item }: CartItemProps) => {
     <View
       style={{
         flexDirection: 'row',
+        justifyContent: 'space-between',
         paddingVertical: 10,
         paddingHorizontal: 10,
         borderColor: '#f7f7f7',
@@ -206,32 +252,38 @@ const CartItem = ({ item }: CartItemProps) => {
         backgroundColor: '#fff',
       }}
     >
-      {item.thumbnail ? (
-        <Image
-          style={{
-            width: 30,
-            height: 40,
-            borderRadius: 5,
-            marginHorizontal: 10,
-          }}
-          source={{ uri: item.thumbnail }}
-        />
-      ) : (
+      <View style={{ flexDirection: 'row' }}>
+        {item.thumbnail ? (
+          <Image
+            style={{
+              width: 30,
+              height: 40,
+              borderRadius: 5,
+              marginHorizontal: 10,
+            }}
+            source={{ uri: item.thumbnail }}
+          />
+        ) : (
+          <View
+            style={{
+              width: 30,
+              height: 40,
+              backgroundColor: 'grey',
+              borderRadius: 5,
+              marginHorizontal: 10,
+            }}
+          />
+        )}
+
         <View
-          style={{
-            width: 30,
-            height: 40,
-            backgroundColor: 'grey',
-            borderRadius: 5,
-            marginHorizontal: 10,
-          }}
-        />
-      )}
-      <View
-        style={{ flexDirection: 'column', justifyContent: 'space-between' }}
-      >
-        <Text>{item.variant.title}</Text>
-        <Text>{item.variant.ean}</Text>
+          style={{ flexDirection: 'column', justifyContent: 'space-between' }}
+        >
+          <Text>{item.variant.title}</Text>
+          <Text>{item.variant.ean}</Text>
+        </View>
+      </View>
+      <View style={{ justifyContent: 'center' }}>
+        <Text>{`x${item.quantity}`}</Text>
       </View>
     </View>
   )
