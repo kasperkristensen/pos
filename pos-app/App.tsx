@@ -5,7 +5,6 @@ import ThemeProvider from './src/lib/contexts/theme-context'
 
 import { useAppState } from './src/lib/hooks/use-app-state'
 import useCachedResources from './src/lib/hooks/use-cached-ressources'
-import useColorScheme from './src/lib/hooks/use-color-scheme'
 import onAppStateChange from './src/lib/utils/on-app-state-change'
 import Navigation from './src/navigation'
 
@@ -26,7 +25,6 @@ export default function App() {
   }, [initialize])
 
   const isLoadingComplete = useCachedResources()
-  const colorScheme = useColorScheme()
   useAppState(onAppStateChange)
 
   if (!isLoadingComplete) {
@@ -45,7 +43,7 @@ export default function App() {
               <CartProvider>
                 <StoreProvider>
                   <Notification />
-                  <Navigation colorScheme={colorScheme} />
+                  <Navigation />
                   <StatusBar style="dark" />
                 </StoreProvider>
               </CartProvider>

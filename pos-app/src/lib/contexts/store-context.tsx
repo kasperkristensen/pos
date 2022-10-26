@@ -28,6 +28,8 @@ interface StoreContext {
   updateCart: (update: StorePostCartsCartReq) => Promise<void>
   resetCart: () => void
   cart?: Cart
+  addLineItemState: AddLineItemState | null
+  clearAddLineItemState: () => void
 }
 
 const StoreContext = React.createContext<StoreContext | null>(null)
@@ -83,15 +85,20 @@ const reducer = (
   }
 }
 
-type AddLineItemState = {}
+type AddLineItemState = {
+  status: 'loading' | 'success' | 'error'
+  itemCount: number
+}
 
 export const StoreProvider = ({ children }: StoreProps) => {
   const { cart, setCart, createCart } = useCart()
   const [state, dispatch] = React.useReducer(reducer, {})
   const updateCart = useUpdateCart(state.cart_id || '')
+  const [addLineItemState, setAddLineItemState] =
+    useState<AddLineItemState | null>(null)
 
   const [countryCode, setCountryCode] = useState<string | undefined>(undefined)
-  const addLineItem = useCreateLineItem(state.cart?.id!)
+  const { mutate: addLineItem } = useCreateLineItem(state.cart?.id!)
   const removeLineItem = useDeleteLineItem(state.cart?.id!)
   const adjustLineItem = useUpdateLineItem(state.cart?.id!)
 
@@ -101,10 +108,6 @@ export const StoreProvider = ({ children }: StoreProps) => {
     setCountryCode(countryCode)
   }
 
-  // const address = {
-  //   address_1: 'Test',
-  // }
-  // useEffect(() => {})
   useEffect(() => {
     const { countryCode } = state
     if (countryCode) {
@@ -269,21 +272,34 @@ export const StoreProvider = ({ children }: StoreProps) => {
     variantId: string
     quantity: number
   }) => {
-    addLineItem.mutate(
+    setAddLineItemState({ status: 'loading', itemCount: quantity })
+
+    addLineItem(
       {
         variant_id: variantId,
         quantity: quantity,
       },
       {
         onSuccess: ({ cart }) => {
+          setAddLineItemState((prev) => ({
+            ...prev!,
+            status: 'success',
+          }))
           dispatch({ type: 'set_cart', payload: cart })
           storeCart(cart.id)
         },
         onError: (error) => {
-          alert(error)
+          setAddLineItemState((prev) => ({
+            ...prev!,
+            status: 'error',
+          }))
         },
       }
     )
+  }
+
+  const clearAddLineItemState = () => {
+    setAddLineItemState(null)
   }
 
   const deleteItem = (lineId: string) => {
@@ -339,6 +355,8 @@ export const StoreProvider = ({ children }: StoreProps) => {
         resetCart,
         updateCart: updateCartFields,
         cart: state.cart,
+        addLineItemState,
+        clearAddLineItemState,
       }}
     >
       {children}
