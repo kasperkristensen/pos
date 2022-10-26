@@ -1,7 +1,7 @@
 import { Reader, useStripeTerminal } from '@stripe/stripe-terminal-react-native'
 import { useEffect } from 'react'
-import { Pressable, SafeAreaView, StyleSheet } from 'react-native'
-import { Box } from '../../modules/common'
+import { Pressable, SafeAreaView, ScrollView, StyleSheet } from 'react-native'
+import { Box, Button, Divider, Text } from '../../modules/common'
 import { DiscoveredReader } from '../../modules/readers'
 import { ActionScreenProps } from '../../types'
 
@@ -16,6 +16,7 @@ const ReaderSettings = ({
     discoveredReaders,
     connectBluetoothReader,
     cancelDiscovering,
+    disconnectReader,
   } = useStripeTerminal()
 
   useEffect(() => {
@@ -48,21 +49,52 @@ const ReaderSettings = ({
     console.log('Reader connected successfully', reader)
   }
 
+  const handleDisonnectReader = async () => {
+    const result = await disconnectReader()
+
+    if (result?.error) {
+      console.log('disconnectReader error', result.error)
+      return
+    }
+
+    console.log('Reader disconnected successfully')
+  }
+
   return (
-    <Box px="l">
+    <Box px="l" pt="xl" backgroundColor="background" style={styles.container}>
       <SafeAreaView>
-        <Box>
-          {connectedReader && <DiscoveredReader reader={connectedReader} />}
+        <Text variant="xlarge" weight="semibold">
+          Connected terminal
+        </Text>
+        <Box mt="base">
+          {connectedReader ? (
+            <Pressable onPress={handleDisonnectReader}>
+              <DiscoveredReader reader={connectedReader} />
+            </Pressable>
+          ) : (
+            <Text color="textPlaceholder">No connected terminal</Text>
+          )}
         </Box>
       </SafeAreaView>
-      {discoveredReaders.map((reader) => (
-        <Pressable
-          key={reader.serialNumber}
-          onPress={() => handleConnectBluetoothReader(reader)}
-        >
-          <DiscoveredReader reader={reader} />
-        </Pressable>
-      ))}
+      <Box mt="xl">
+        <Text variant="large" weight="semibold">
+          Available terminals
+        </Text>
+      </Box>
+      <Box mt="base" mb="l">
+        <Divider width={32} />
+      </Box>
+      <ScrollView>
+        {discoveredReaders.map((reader) => (
+          <Button
+            backgroundColor="background"
+            key={reader.serialNumber}
+            onPress={() => handleConnectBluetoothReader(reader)}
+          >
+            <DiscoveredReader reader={reader} />
+          </Button>
+        ))}
+      </ScrollView>
     </Box>
   )
 }
