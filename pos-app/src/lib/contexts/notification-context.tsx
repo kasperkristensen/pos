@@ -1,5 +1,4 @@
 import { createContext, useContext, useState } from 'react'
-import { StyleSheet } from 'react-native'
 
 type Props = {
   children?: React.ReactNode
@@ -41,24 +40,6 @@ const NotificationProvider = ({ children }: Props) => {
     </NotificationContext.Provider>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    width: '100%',
-    position: 'relative',
-    flex: 1,
-  },
-  notificationArea: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    height: 144,
-    zIndex: 9999,
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-  },
-})
 
 export default NotificationProvider
 

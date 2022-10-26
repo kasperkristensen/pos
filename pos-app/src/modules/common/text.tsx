@@ -7,10 +7,20 @@ import { cleanProps, getSpacing } from '../../lib/utils/get-spacing'
 type Props = {
   color?: keyof Theme['colors']
   variant?: keyof Theme['textVariants']
+  weight?: keyof Theme['fontWeights']
 } & React.ComponentProps<typeof RNText>
 
 export const Text = forwardRef<RNText, Props>(
-  ({ color = 'textPrimary', variant = 'base', style, ...rest }, ref) => {
+  (
+    {
+      color = 'textPrimary',
+      variant = 'base',
+      weight = 'regular',
+      style,
+      ...rest
+    },
+    ref
+  ) => {
     const { theme } = useTheme()
     const { spacingProps, ...clean } = cleanProps(rest)
 
@@ -21,6 +31,7 @@ export const Text = forwardRef<RNText, Props>(
           {
             color: theme.colors[color],
             ...theme.textVariants[variant],
+            fontWeight: theme.fontWeights[weight],
           },
           getSpacing(spacingProps, theme),
           style,

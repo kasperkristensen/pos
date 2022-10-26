@@ -1,30 +1,11 @@
-import { Image } from '@medusajs/medusa'
 import { useProduct } from 'medusa-react'
 import { Pressable, SafeAreaView, ScrollView, StyleSheet } from 'react-native'
 import useVariant from '../../lib/api/variants/retrieve'
+import { useStore } from '../../lib/contexts/store-context'
 import { Box, Button, Divider, Text } from '../../modules/common'
 import { BackIcon } from '../../modules/icons'
 import { ImageSlider } from '../../modules/product'
 import { ActionScreenProps } from '../../types'
-
-const fakeImages: Omit<Image, 'beforeInsert'>[] = [
-  {
-    id: '1',
-    url: 'https://images.unsplash.com/photo-1662581871625-7dbd3ac1ca18?ixlib=rb-4.0.3&ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=772&q=80',
-    deleted_at: null,
-    created_at: new Date(),
-    updated_at: new Date(),
-    metadata: {},
-  },
-  {
-    id: '2',
-    url: 'https://images.unsplash.com/photo-1666526257891-7ddde95571fb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=774&q=80',
-    deleted_at: null,
-    created_at: new Date(),
-    updated_at: new Date(),
-    metadata: {},
-  },
-]
 
 export default function ProductScreen({
   navigation,
@@ -54,6 +35,9 @@ export default function ProductScreen({
       screen: 'Home',
     })
   }
+
+  const { addItem } = useStore()
+
   return (
     <Box backgroundColor="background" style={styles.container}>
       <SafeAreaView>
@@ -93,6 +77,7 @@ export default function ProductScreen({
             py="base"
             mb="s"
             style={styles.button}
+            onPress={() => addItem({ variantId: variant?.id!, quantity: 1 })}
           >
             <Text variant="large" color="textOnColor">
               Add to bag

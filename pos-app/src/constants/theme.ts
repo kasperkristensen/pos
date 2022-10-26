@@ -87,6 +87,10 @@ export const theme = {
       borderRadius: 8,
     },
   },
+  fontWeights: {
+    regular: '400' as const,
+    semibold: '600' as const,
+  },
   textVariants: {
     small: {
       ...bodyFontFamily,

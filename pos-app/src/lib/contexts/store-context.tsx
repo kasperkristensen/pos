@@ -44,8 +44,6 @@ interface StoreProps {
   children: React.ReactNode
 }
 
-const CART_KEY = 'medusa_cart_id'
-
 type StoreProviderState = {
   regionId?: string
   countryCode?: string
@@ -84,6 +82,8 @@ const reducer = (
       return state
   }
 }
+
+type AddLineItemState = {}
 
 export const StoreProvider = ({ children }: StoreProps) => {
   const { cart, setCart, createCart } = useCart()
