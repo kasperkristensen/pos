@@ -1,6 +1,6 @@
 import { Reader, useStripeTerminal } from '@stripe/stripe-terminal-react-native'
 import { useEffect } from 'react'
-import { Pressable, SafeAreaView, ScrollView, StyleSheet } from 'react-native'
+import { SafeAreaView, ScrollView, StyleSheet } from 'react-native'
 import { Box, Button, Divider, Text } from '../../modules/common'
 import { DiscoveredReader } from '../../modules/readers'
 import { ActionScreenProps } from '../../types'
@@ -68,9 +68,22 @@ const ReaderSettings = ({
         </Text>
         <Box mt="base">
           {connectedReader ? (
-            <Pressable onPress={handleDisonnectReader}>
+            <>
               <DiscoveredReader reader={connectedReader} />
-            </Pressable>
+              <Button
+                backgroundColor="buttonSecondary"
+                border="subtle"
+                radii="m"
+                mt="base"
+                py="s"
+                style={styles.button}
+                onPress={handleDisonnectReader}
+              >
+                <Text variant="large" weight="semibold">
+                  Disconnect
+                </Text>
+              </Button>
+            </>
           ) : (
             <Text color="textPlaceholder">No connected terminal</Text>
           )}
@@ -105,6 +118,10 @@ const styles = StyleSheet.create({
   },
   discoverArea: {
     flex: 1,
+  },
+  button: {
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 })
 

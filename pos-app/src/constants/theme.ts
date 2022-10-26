@@ -51,6 +51,7 @@ export const theme = {
     supportWarning: palette.butterCup,
     supportSuccess: palette.madang,
     supportError: palette.tamarillo,
+    success: palette.jewel,
   },
   spacing: {
     none: 0,
