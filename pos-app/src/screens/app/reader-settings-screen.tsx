@@ -76,15 +76,15 @@ const ReaderSettings = ({
           )}
         </Box>
       </SafeAreaView>
-      <Box mt="xl">
-        <Text variant="large" weight="semibold">
-          Available terminals
-        </Text>
-      </Box>
-      <Box mt="base" mb="l">
-        <Divider width={32} />
+      <Box mt="l">
+        <Divider width={'100%'} />
       </Box>
       <ScrollView>
+        <Box mt="xl" mb="base">
+          <Text variant="base" color="textPlaceholder">
+            Available terminals
+          </Text>
+        </Box>
         {discoveredReaders.map((reader) => (
           <Button
             backgroundColor="background"
