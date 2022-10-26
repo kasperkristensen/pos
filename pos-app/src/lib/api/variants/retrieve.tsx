@@ -10,7 +10,6 @@ type ProductVariantResponse = {
 export const retrieveVariant = async (
   barcode: string
 ): ResponsePromise<ProductVariantResponse> => {
-  console.log(barcode)
   const { data, ...rest } = await apiClient
     .get(`/variants/${barcode}`)
     .then((res) => res.data)

@@ -28,7 +28,6 @@ export default function BarcodeScreen({
     retrieveVariant(barcode)
       .then(({ variant }) => {
         setIsLoading(false)
-        console.log('got variant')
         hideNotification()
         navigate('Root', {
           screen: 'Product',
@@ -40,7 +39,6 @@ export default function BarcodeScreen({
       })
       .catch((error) => {
         setIsLoading(false)
-        console.log(error.message)
         showNotification({
           content: error.message,
           duration: 3000,
