@@ -56,7 +56,11 @@ const MainNavigator = () => {
         component={BottomTabNavigator}
         options={{ headerShown: false }}
       />
-      <Main.Group>
+      <Main.Group
+        screenOptions={{
+          presentation: 'modal',
+        }}
+      >
         <Main.Screen
           name="ReaderSettings"
           component={ReaderSettings}
