@@ -4,7 +4,6 @@
  *
  */
 import { NavigationContainer } from '@react-navigation/native'
-import { AddLineItemModal } from '../modules/cart'
 
 import AuthenticationNavigator from './authentication'
 import LinkingConfiguration from './linking-configuration'
@@ -16,7 +15,6 @@ export default function Navigation() {
   return (
     <NavigationContainer linking={LinkingConfiguration}>
       {isSignedIn ? <RootNavigator /> : <AuthenticationNavigator />}
-      <AddLineItemModal />
     </NavigationContainer>
   )
 }

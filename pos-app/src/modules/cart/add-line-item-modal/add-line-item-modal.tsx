@@ -16,7 +16,7 @@ export const AddLineItemModal = () => {
 
   const fadeIn = useCallback(() => {
     Animated.timing(opacity, {
-      toValue: 0.5,
+      toValue: 0.9,
       duration: FADE_IN_DURATION,
       useNativeDriver: true,
     }).start()
@@ -91,7 +91,7 @@ export const AddLineItemModal = () => {
       backgroundColor="transparent"
     >
       <AnimatedBox
-        style={[styles.overlay, opacity]}
+        style={[styles.overlay, { opacity: opacity }]}
         backgroundColor="backgroundInverse"
       />
       <AnimatedBox
@@ -179,6 +179,7 @@ export const AddLineItemModal = () => {
 const styles = StyleSheet.create({
   container: {
     zIndex: 9999,
+    backgroundColor: 'transparent',
     position: 'absolute',
     justifyContent: 'flex-end',
   },
