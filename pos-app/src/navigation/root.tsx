@@ -199,7 +199,7 @@ function BottomTabNavigator() {
         name="Cart"
         component={CartScreen}
         options={{
-          title: 'Cart',
+          headerShown: false,
           tabBarButton: (props) => <TabButton {...props} />,
           tabBarIcon: ({ focused }) => (
             <BagIcon color={focused ? 'iconPrimary' : 'iconPlaceholder'} />

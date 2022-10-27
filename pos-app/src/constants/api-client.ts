@@ -3,7 +3,7 @@ import axios from 'axios'
 import { QueryClient } from 'react-query'
 
 const BACKEND_URL =
-  process.env.BACKEND_URL || 'http://ddab-83-151-141-70.ngrok.io'
+  process.env.BACKEND_URL || 'https://ab66-109-178-130-188.ngrok.io'
 
 const apiClient = axios.create({
   baseURL: `${BACKEND_URL}/pos`,
